@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary       = 'DSL Form Generator'
   spec.description   = 'Ruby DSL project for generate HTML Form'
   spec.homepage      = 'https://github.com/Psixodelik/rails-project-lvl1'
-  spec.required_ruby_version = '>= 2.4.0'
+  spec.required_ruby_version = '>= 2.5.0'
 
   spec.metadata['allowed_push_host'] = 'TODO: Set to "https://mygemserver.com"'
 
