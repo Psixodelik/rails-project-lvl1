@@ -2,7 +2,11 @@
 
 name: Rubocop
 
-on: [push]
+on:
+  push:
+    paths:
+      - 'lib/**'
+
 
 jobs:
   build:
