@@ -35,7 +35,7 @@ module HexletCode
       rendered_elements.push input_render('submit', 'commit', 'Save', false)
     end
 
-    def input_render(type, name, value, label = nil)
+    def input_render(type, name, value, label = true)
       result = []
       result.push HexletCode::Tag.build('label', for: name) { name } if label
       result.push HexletCode::Tag.build('input', type: type, name: name, value: value)
