@@ -29,9 +29,8 @@ module HexletCode
 
       hash.map do |key, value|
         value_normalize = boolean?(value) ? nil : "\"#{value}\""
-        sep = value_normalize.nil? ? nil : sep
-
-        "#{key}#{sep}#{value_normalize}" if value != false
+        separate = value_normalize.nil? ? nil : sep
+        "#{key}#{separate}#{value_normalize}" if value != false
       end.join ' '
     end
 

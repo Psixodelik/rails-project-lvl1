@@ -11,15 +11,17 @@ module HexletCode
       @rendered_elements = []
     end
 
-    def input(name, *option)
+    def input(name, **option)
       default_element_type = :input
       value = form_option[name]
 
-      element_type = option.is_a?(Hash) && option.key?(:as) ? option[:as] : default_element_type
+      attributes = option.merge({ name: name, value: value })
+      element_type = option.is_a?(Hash) && option.key?(:as) ? attributes.delete(:as) : default_element_type
 
       rendered_elements.push case element_type
                              when :input
-                               input_render(name, *option)
+                               attributes[:type] = 'text'
+                               input_render(**attributes)
                              when :text
                                textarea_render(name, value)
                              when :select
@@ -30,19 +32,19 @@ module HexletCode
                              end
     end
 
-    def submit(name = 'commit', *submit_attr)
-      submit_attr = {
-        :type => 'submit',
-        :value => 'Save'
-      } if submit_attr.empty?
-
-      rendered_elements.push input_render(name, submit_attr)
+    def submit(value = 'Save')
+      attributes = { value: value, type: 'submit' }
+      rendered_elements.push input_render(**attributes)
     end
 
-    def input_render(name, option = {})
+    def input_render(**option)
       result = []
-      result.push HexletCode::Tag.build('label', for: name) { name }
-      result.push HexletCode::Tag.build('input', name: name, **option)
+
+      if option[:type] == 'text'
+        result.push HexletCode::Tag.build('label', for: option[:name]) { option[:name] }
+      end
+
+      result.push HexletCode::Tag.build('input', **option)
     end
 
     def textarea_render(name, value, cols = 20, rows = 40)
