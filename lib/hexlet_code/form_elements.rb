@@ -3,19 +3,17 @@
 module HexletCode
   # Rendering Form Element such as input, select
   class FormElements
-    attr_reader :form_option
+    attr_reader :form_option, :default_element_type
     attr_accessor :rendered_elements
 
     def initialize(data)
       @form_option = data
       @rendered_elements = []
+      @default_element_type = :input
     end
 
     def input(name, **option)
-      default_element_type = :input
-      value = form_option[name]
-
-      attributes = option.merge({ name: name, value: value })
+      attributes = option.merge({ name: name, value: form_option[name] })
       element_type = option.is_a?(Hash) && option.key?(:as) ? attributes.delete(:as) : default_element_type
 
       case element_type
@@ -31,7 +29,7 @@ module HexletCode
 
     def render(tag, **attributes)
       render = HexletCode::Tag.build(tag, **attributes) { yield if block_given? }
-      render = attributes[:push] == false ? render : rendered_elements.push(render)
+      attributes[:push] == false ? render : rendered_elements.push(render)
     end
 
     def input_render(**attributes)
