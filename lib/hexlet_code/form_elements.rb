@@ -26,11 +26,18 @@ module HexletCode
 
         select_render(name, selected_value, options)
       end
-
     end
 
-    def input_render(type, name, value)
-      HexletCode::Tag.build('input', type: type, name: name, value: value)
+    def submit(value = 'Save')
+      rendered_elements.push input_render('submit', 'commit', 'Save', false)
+    end
+
+    def input_render(type, name, value, label = true)
+      result = []
+      result.push HexletCode::Tag.build('label', for: name) { name } if label
+      result.push HexletCode::Tag.build('input', type: type, name: name, value: value)
+
+      result.join()
     end
 
     def textarea_render(name, value, cols = 20, rows = 40)
