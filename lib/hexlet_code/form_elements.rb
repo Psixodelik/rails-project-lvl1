@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 module HexletCode
+  # Rendering Form Element such as input, select
   class FormElements
     attr_reader :form_option
     attr_accessor :rendered_elements
@@ -15,29 +18,29 @@ module HexletCode
 
       element_type = option.is_a?(Hash) ? option[:as] : default_element_type
 
-      rendered_elements.push  case element_type
-      when :input
-        input_render(type, name, value)
-      when :text
-        textarea_render(name, value)
-      when :select
-        selected_value = value
-        options = option[:collection]
+      rendered_elements.push case element_type
+                             when :input
+                               input_render(type, name, value)
+                             when :text
+                               textarea_render(name, value)
+                             when :select
+                               selected_value = value
+                               options = option[:collection]
 
-        select_render(name, selected_value, options)
-      end
+                               select_render(name, selected_value, options)
+                             end
     end
 
-    def submit(value = 'Save')
+    def submit(_value = 'Save')
       rendered_elements.push input_render('submit', 'commit', 'Save', false)
     end
 
-    def input_render(type, name, value, label = true)
+    def input_render(type, name, value, label = nil)
       result = []
       result.push HexletCode::Tag.build('label', for: name) { name } if label
       result.push HexletCode::Tag.build('input', type: type, name: name, value: value)
 
-      result.join()
+      result.join
     end
 
     def textarea_render(name, value, cols = 20, rows = 40)
@@ -46,8 +49,8 @@ module HexletCode
 
     def select_render(name, selected, collection)
       options = collection.map do |value|
-       selected = value === selected
-       HexletCode::Tag.build('option', value: value, selected: selected) { value }
+        selected = value == selected
+        HexletCode::Tag.build('option', value: value, selected: selected) { value }
       end
 
       HexletCode::Tag.build('select', name: name) { options }

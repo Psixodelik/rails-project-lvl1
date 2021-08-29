@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HexletCode
   # Class for create HTML-tag markup
   class Tag
