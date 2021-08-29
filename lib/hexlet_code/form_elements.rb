@@ -18,7 +18,6 @@ module HexletCode
 
       case element_type
       when :input
-        attributes[:type] = 'text'
         input_render(**attributes)
       when :text
         textarea_render(**attributes)
@@ -34,7 +33,7 @@ module HexletCode
 
     def input_render(**attributes)
       render('label', for: attributes[:name]) { attributes[:name] }
-      render('input', **attributes)
+      render('input', type: 'text', **attributes)
     end
 
     def textarea_render(**attributes)
