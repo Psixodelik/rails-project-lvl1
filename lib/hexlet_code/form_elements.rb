@@ -11,16 +11,15 @@ module HexletCode
       @rendered_elements = []
     end
 
-    def input(name, option = nil)
+    def input(name, *option)
       default_element_type = :input
-      type = 'text'
       value = form_option[name]
 
       element_type = option.is_a?(Hash) && option.key?(:as) ? option[:as] : default_element_type
 
       rendered_elements.push case element_type
                              when :input
-                               input_render(type, name, value)
+                               input_render(name, *option)
                              when :text
                                textarea_render(name, value)
                              when :select
@@ -31,14 +30,19 @@ module HexletCode
                              end
     end
 
-    def submit
-      rendered_elements.push input_render('submit', 'commit', 'Save', false)
+    def submit(name = 'commit', *submit_attr)
+      submit_attr = {
+        :type => 'submit',
+        :value => 'Save'
+      } if submit_attr.empty?
+
+      rendered_elements.push input_render(name, submit_attr)
     end
 
-    def input_render(type, name, value, label = true)
+    def input_render(name, option = {})
       result = []
-      result.push HexletCode::Tag.build('label', for: name) { name } if label
-      result.push HexletCode::Tag.build('input', type: type, name: name, value: value)
+      result.push HexletCode::Tag.build('label', for: name) { name }
+      result.push HexletCode::Tag.build('input', name: name, **option)
     end
 
     def textarea_render(name, value, cols = 20, rows = 40)
