@@ -18,46 +18,49 @@ module HexletCode
       attributes = option.merge({ name: name, value: value })
       element_type = option.is_a?(Hash) && option.key?(:as) ? attributes.delete(:as) : default_element_type
 
-      rendered_elements.push case element_type
-                             when :input
-                               attributes[:type] = 'text'
-                               input_render(**attributes)
-                             when :text
-                               textarea_render(name, value)
-                             when :select
-                               selected_value = value
-                               options = option[:collection]
+      case element_type
+      when :input
+        attributes[:type] = 'text'
+        input_render(**attributes)
+      when :text
+        textarea_render(**attributes)
+      when :select
+        select_render(**attributes)
+      end
+    end
 
-                               select_render(name, selected_value, options)
-                             end
+    def render(tag, **attributes)
+      render = HexletCode::Tag.build(tag, **attributes) { yield if block_given? }
+      render = attributes[:push] == false ? render : rendered_elements.push(render)
+    end
+
+    def input_render(**attributes)
+      render('label', for: attributes[:name]) { attributes[:name] }
+      render('input', **attributes)
+    end
+
+    def textarea_render(**attributes)
+      render('label', for: attributes[:name]) { attributes[:name] }
+      render('textarea', **attributes)
     end
 
     def submit(value = 'Save')
       attributes = { value: value, type: 'submit' }
-      rendered_elements.push input_render(**attributes)
+      render('input', **attributes)
     end
 
-    def input_render(**option)
-      result = []
+    def select_render(**attributes)
+      collection = attributes.delete(:collection)
+      selected_value = form_option[attributes[:name]]
 
-      if option[:type] == 'text'
-        result.push HexletCode::Tag.build('label', for: option[:name]) { option[:name] }
-      end
-
-      result.push HexletCode::Tag.build('input', **option)
-    end
-
-    def textarea_render(name, value, cols = 20, rows = 40)
-      HexletCode::Tag.build('textarea', name: name, cols: cols, rows: rows) { value }
-    end
-
-    def select_render(name, selected, collection)
       options = collection.map do |value|
-        selected = value == selected
-        HexletCode::Tag.build('option', value: value, selected: selected) { value }
+        is_selected = value == selected_value
+        render('option', value: value, selected: is_selected, push: false) { value }
       end
 
-      HexletCode::Tag.build('select', name: name) { options }
+      attributes.delete(:value)
+
+      render('select', **attributes) { options }
     end
   end
 end
