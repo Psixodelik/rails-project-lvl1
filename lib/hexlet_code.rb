@@ -1,45 +1,21 @@
 # frozen_string_literal: true
 
 require_relative 'hexlet_code/version'
+require_relative 'hexlet_code/form_elements'
+require_relative 'hexlet_code/tag'
 
 module HexletCode
   class Error < StandardError; end
 
-  # Class for create HTML-tag markup
-  class Tag
-    def self.build(tag, *attrs)
-      body = block_given? ? yield : nil
-      attributes = hash_to_s(*attrs, '=')
+  def self.form_for(option, action = "#")
+    action = action[:url] if action.is_a?(Hash) && action.key?(:url)
 
-      render(tag, body, attributes)
-    end
+    form = self::FormElements.new option
+    form_elements = yield form
 
-    def self.paired?(tag)
-      unpaired_tags = %w[
-        br
-        img
-        input
-      ]
-
-      !unpaired_tags.include? tag
-    end
-
-    def self.hash_to_s(hash = nil, sep)
-      return nil if hash.nil?
-
-      hash.map { |key, value| "#{key}#{sep}'#{value}'" }
-          .join ' '
-    end
-
-    def self.insert_start_space(string)
-      string.insert(0, ' ')
-    end
-
-    def self.render(tag, body, attributes)
-      attributes = insert_start_space(attributes) unless attributes.nil?
-      close_tag = paired?(tag) ? "</#{tag}>" : nil
-
-      "<#{tag}#{attributes}>#{body}#{close_tag}"
+    self::Tag.build 'form', action: action, method: 'post' do
+      form_elements
     end
   end
 end
+
