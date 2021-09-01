@@ -1,12 +1,9 @@
-### Hexlet tests and linter status:
-
 # [![Actions Status](https://github.com/Psixodelik/rails-project-lvl1/workflows/hexlet-check/badge.svg)](https://github.com/Psixodelik/rails-project-lvl1/actions)
+
 
 # HexletCode
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/hexlet_code`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+HexletCode - Gem for generating HTML forms
 
 ## Installation
 
@@ -26,14 +23,77 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Create field structure
 
-## Development
+```ruby
+User = Struct.new(:name, :job, keyword_init: true)
+user = User.new job: 'hexlet'
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+### Create an empty form
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```ruby
+HexletCode.form_for user do |tag|
+  # Code
+end
+```
 
-## Contributing
+### Creating forms elements
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/hexlet_code.
+Two methods are used to create form fields:
+
+* `input` to create` input`, `textarea` and` select`. The `as` parameter is used to select the type
+* `submit` to create a button
+
+**Example**
+
+```ruby
+User = Struct.new(:name, :job, :gender, keyword_init: true)
+user = User.new name: 'rob', job: 'hexlet', gender: 'm'
+
+HexletCode.form_for user do |f|
+  f.input :name
+  f.input :job, as: :text
+  f.input :gender, as: :select, collection: %w[m f]
+  f.submit
+end
+```
+
+```html
+<form action="#" method="post">
+  <label for="name">Name</label>
+  <input type="text" name="name" value="rob">
+
+  <label for="job">Job</label>
+  <textarea cols="20" rows="40" name="job">hexlet</textarea>
+
+  <select name="gender">
+    <option value="m" selected>m</option>
+    <option value="f">f</option>
+  </select>
+
+  <input type="submit" value="Save" name="commit">
+</form>
+```
+
+### Creating other elements
+
+To create other elements, use the `build` method of the `Tag` class.
+
+The method takes:
+
+* Tag name
+* Options
+
+**Example**
+
+```ruby
+HexletCode::Tag.build('br') # -> <br>
+HexletCode::Tag.build('img', src: 'path/to/image') # -> <img src="path/to/image">
+```
+
+The method can take a block that will be placed inside the tag
+
+```ruby
+HexletCode::Tag.build('label', for: 'email') { 'Email' } # -> <label for="email">Email</label>
+```
